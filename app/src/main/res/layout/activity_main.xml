@@ -12,6 +12,13 @@
         android:text="初始化breakpad" />
 
     <Button
+        android:id="@+id/bt_bugly_init"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/bt_crash_init"
+        android:text="初始化bugly" />
+
+    <Button
         android:id="@+id/bt_self_other"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -2,6 +2,7 @@ package com.breakpad.android;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.widget.Toast;
 
 import com.breakpad.nativecreash.NativeCrash;
 import com.netease.LDNetDiagnoService.LDNetTraceRoute;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.File;
 
@@ -23,11 +25,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        int check = checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, android.os.Process.myPid(),
-                android.os.Process.myUid());
-        if (check != PackageManager.PERMISSION_GRANTED) {
-            String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
-            requestPermissions(permissions, 100);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            int check = checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, android.os.Process.myPid(),
+                    android.os.Process.myUid());
+            if (check != PackageManager.PERMISSION_GRANTED) {
+                String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
+                requestPermissions(permissions, 100);
+            }
         }
         Button bt_crash_init = (Button) findViewById(R.id.bt_crash_init);
         bt_crash_init.setOnClickListener(new View.OnClickListener() {
@@ -49,7 +53,13 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, init ? "初始化成功" : "初始化失败", Toast.LENGTH_SHORT).show();
             }
         });
-
+        Button bt_bugly_init = (Button) findViewById(R.id.bt_bugly_init);
+        bt_bugly_init.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CrashReport.initCrashReport(getApplicationContext(), "", true);
+            }
+        });
         Button tv = (Button) findViewById(R.id.bt_self_other);
         tv.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,6 +83,4 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
-
 }
