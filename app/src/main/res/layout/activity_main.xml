@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/bt_crash_init"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="初始化breakpad" />
+
+    <Button
+        android:id="@+id/bt_self_other"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/bt_crash_init"
+        android:text="测试自己的so" />
+
+    <Button
+        android:id="@+id/bt_test_other"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/bt_self_other"
+        android:text="测试其他的so" />
+
+    <ImageView
+        android:id="@+id/bt_test_bitmap"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/bt_test_other"
+        android:background="@drawable/ic_livevideo_learnfeedback_duration"
+        android:text="测试bitmap" />
+
+    <com.breakpad.android.CrashSurfaceView
+        android:id="@+id/crash_surface"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_below="@id/bt_test_bitmap"
+        android:visibility="gone" />
+</RelativeLayout>

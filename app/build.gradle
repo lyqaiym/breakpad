@@ -1,0 +1,51 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 26
+    defaultConfig {
+        applicationId "com.breakpad.android"
+        minSdkVersion 15
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0"
+//        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        externalNativeBuild {
+            cmake {
+                cppFlags ""
+            }
+        }
+        ndk {
+            abiFilters "armeabi-v7a"
+        }
+    }
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+//    task ndkBuild(type: Exec, description: 'Compile JNI source via NDK') {
+//        commandLine "E\\:\\develop\\android-sdk_r24.2-windows\\android-sdk-windows\\ndk-bundle\\ndk-build.cmd",//配置ndk的路径
+//                'NDK_PROJECT_PATH=build/intermediates/ndk',//ndk默认的生成so的文件
+//                'APP_BUILD_SCRIPT=src\\main\\cpp\\traceroute\\Android.mk',//指定项目以这个mk的方式
+//                'NDK_APPLOCATION_MK=src\\main\\cpp\\traceroute\\Application.mk'//指定项目以这个mk的方式
+//
+//    }
+}
+
+dependencies {
+    //    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    api fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
+    //    testImplementation 'junit:junit:4.12'
+    //    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    //    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    implementation project(':testso')
+    implementation project(':breakpad')
+}

@@ -1,0 +1,78 @@
+package com.breakpad.android;
+
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.os.Environment;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.Toast;
+
+import com.breakpad.nativecreash.NativeCrash;
+import com.netease.LDNetDiagnoService.LDNetTraceRoute;
+
+import java.io.File;
+
+public class MainActivity extends AppCompatActivity {
+    String TAG = "MainActivityLog";
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        int check = checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, android.os.Process.myPid(),
+                android.os.Process.myUid());
+        if (check != PackageManager.PERMISSION_GRANTED) {
+            String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
+            requestPermissions(permissions, 100);
+        }
+        Button bt_crash_init = (Button) findViewById(R.id.bt_crash_init);
+        bt_crash_init.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                final File file = new File(getCacheDir(), "crash");
+                final File file = new File(Environment.getExternalStorageDirectory(), "crash");
+                if (!file.exists()) {
+                    file.mkdirs();
+                }
+                File[] fs = file.listFiles();
+                if (fs != null) {
+                    Log.d(TAG, "onCreate:cacheDir=" + file + ",size=" + fs.length);
+                } else {
+                    Log.d(TAG, "onCreate:cacheDir=" + file + ",size=null");
+                }
+                boolean init = NativeCrash.getInstance().initJava(file.getPath());
+                Log.d(TAG, "onClick:init=" + init);
+                Toast.makeText(MainActivity.this, init ? "初始化成功" : "初始化失败", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        Button tv = (Button) findViewById(R.id.bt_self_other);
+        tv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NativeCrash.getInstance().crash();
+            }
+        });
+        Button bt_test_other = (Button) findViewById(R.id.bt_test_other);
+        bt_test_other.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LDNetTraceRoute ldNetTraceRoute = LDNetTraceRoute.getInstance();
+                ldNetTraceRoute.startJNICTraceRoute("");
+            }
+        });
+        ImageView bt_test_bitmap = (ImageView) findViewById(R.id.bt_test_bitmap);
+        bt_test_bitmap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                findViewById(R.id.crash_surface).setVisibility(View.VISIBLE);
+            }
+        });
+    }
+
+
+}
