@@ -67,8 +67,8 @@ public class MainActivity extends AppCompatActivity {
                 NativeCrash.getInstance().crash();
             }
         });
-        Button bt_self_other_thread = (Button) findViewById(R.id.bt_self_other_thread);
-        bt_self_other_thread.setOnClickListener(new View.OnClickListener() {
+        Button bt_self_other_thread_java = (Button) findViewById(R.id.bt_self_other_thread_java);
+        bt_self_other_thread_java.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 new Thread() {
@@ -77,6 +77,13 @@ public class MainActivity extends AppCompatActivity {
                         NativeCrash.getInstance().crash();
                     }
                 }.start();
+            }
+        });
+        Button bt_self_other_thread_c = (Button) findViewById(R.id.bt_self_other_thread_c);
+        bt_self_other_thread_c.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NativeCrash.getInstance().crashThread();
             }
         });
         Button bt_test_other = (Button) findViewById(R.id.bt_test_other);

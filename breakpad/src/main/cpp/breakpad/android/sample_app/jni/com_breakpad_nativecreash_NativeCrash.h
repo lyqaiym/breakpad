@@ -16,6 +16,8 @@ JNIEXPORT void JNICALL Java_com_breakpad_nativecreash_NativeCrash_init
   (JNIEnv *, jobject, jstring);
 JNIEXPORT void JNICALL Java_com_breakpad_nativecreash_NativeCrash_crash
         (JNIEnv *, jobject);
+JNIEXPORT void JNICALL Java_com_breakpad_nativecreash_NativeCrash_crashThread
+        (JNIEnv *, jobject);
 
 #ifdef __cplusplus
 }

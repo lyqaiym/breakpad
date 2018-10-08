@@ -73,6 +73,15 @@ void Crash() {
     *a = 1;
 }
 
+void *CrashThread(void *v) {
+    JNIEnv *env;
+//        gJvm->GetEnv((void **) &env, JNI_VERSION_1_6);
+    gJvm->AttachCurrentThread(&env, NULL);
+    LOGD("CrashThread:env=%p", env);
+    volatile int *a = reinterpret_cast<volatile int *>(NULL);
+    *a = 1;
+}
+
 google_breakpad::ExceptionHandler *exceptionHandler;
 
 int init(const char *path) {
@@ -102,6 +111,13 @@ Java_com_breakpad_nativecreash_NativeCrash_init(JNIEnv *env, jobject obj,
 
 JNIEXPORT void JNICALL
 Java_com_breakpad_nativecreash_NativeCrash_crash(JNIEnv *env, jobject obj) {
-    LOGD("NativeCrash_crashexceptionHandler=%p", exceptionHandler);
+    LOGD("NativeCrash_crash:exceptionHandler=%p", exceptionHandler);
     Crash();
+}
+
+JNIEXPORT void JNICALL
+Java_com_breakpad_nativecreash_NativeCrash_crashThread(JNIEnv *env, jobject obj) {
+    LOGD("NativeCrash_crashThread:exceptionHandler=%p", exceptionHandler);
+    pthread_t star_location_1;
+    pthread_create(&star_location_1, NULL, CrashThread, NULL);
 }
