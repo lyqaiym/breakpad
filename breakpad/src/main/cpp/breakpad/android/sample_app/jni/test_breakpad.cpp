@@ -43,6 +43,16 @@
 JavaVM *gJvm = NULL;
 jobject globalobj;
 
+void callJava(JNIEnv *env) {
+    LOGD("callJava");
+    jclass clazz = env->GetObjectClass(globalobj);
+    LOGD("callJava:jclass");
+    jmethodID mid = env->GetStaticMethodID(clazz, "onCrash", "()V");
+    LOGD("callJava:jmethodID");
+    env->CallStaticVoidMethod(clazz, mid);
+    LOGD("callJava:end");
+}
+
 namespace {
 
     bool DumpCallback(const google_breakpad::MinidumpDescriptor &descriptor,
@@ -50,8 +60,10 @@ namespace {
                       bool succeeded) {
         LOGD("DumpCallback:path=%s", descriptor.path());
         JNIEnv *env;
-        gJvm->GetEnv((void **) &env, JNI_VERSION_1_6);
+//        gJvm->GetEnv((void **) &env, JNI_VERSION_1_6);
+        gJvm->AttachCurrentThread(&env, NULL);
         LOGD("DumpCallback:env=%p", env);
+        callJava(env);
         return succeeded;
     }
 }  // namespace
@@ -85,6 +97,7 @@ Java_com_breakpad_nativecreash_NativeCrash_init(JNIEnv *env, jobject obj,
     globalobj = env->NewGlobalRef(obj);
     const char *c_path = env->GetStringUTFChars(path, NULL);
     init(c_path);
+//    callJava(env);
 }
 
 JNIEXPORT void JNICALL

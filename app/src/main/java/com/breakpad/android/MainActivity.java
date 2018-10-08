@@ -60,11 +60,23 @@ public class MainActivity extends AppCompatActivity {
                 CrashReport.initCrashReport(getApplicationContext(), "", true);
             }
         });
-        Button tv = (Button) findViewById(R.id.bt_self_other);
-        tv.setOnClickListener(new View.OnClickListener() {
+        Button bt_self_other = (Button) findViewById(R.id.bt_self_other);
+        bt_self_other.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 NativeCrash.getInstance().crash();
+            }
+        });
+        Button bt_self_other_thread = (Button) findViewById(R.id.bt_self_other_thread);
+        bt_self_other_thread.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new Thread() {
+                    @Override
+                    public void run() {
+                        NativeCrash.getInstance().crash();
+                    }
+                }.start();
             }
         });
         Button bt_test_other = (Button) findViewById(R.id.bt_test_other);

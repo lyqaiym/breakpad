@@ -26,6 +26,14 @@
         android:text="测试自己的so" />
 
     <Button
+        android:id="@+id/bt_self_other_thread"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/bt_crash_init"
+        android:layout_toRightOf="@id/bt_self_other"
+        android:text="测试自己的so,子线程" />
+
+    <Button
         android:id="@+id/bt_test_other"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -16,6 +16,27 @@ public class NativeCrash {
         return instance;
     }
 
+    public static void onCrash() {
+        Log.d(LOG_TAG, "onCrash");
+        ThreadGroup group = Thread.currentThread().getThreadGroup();
+        Log.d(LOG_TAG, "onCrash:activeCount=" + group.activeCount());
+        Thread[] threads = new Thread[group.activeCount()];
+        group.enumerate(threads);
+        for (int i = 0; i < threads.length; i++) {
+            Thread thread = threads[i];
+            printfThread(thread);
+        }
+    }
+
+    private static void printfThread(Thread thread) {
+        StackTraceElement[] stes = thread.getStackTrace();
+        Log.d(LOG_TAG, "printfThread:thread=" + thread + ",stes=" + stes.length);
+        for (int i = 0; i < stes.length; i++) {
+            StackTraceElement ste = stes[i];
+            Log.d(LOG_TAG, "printfThread:ste=" + ste);
+        }
+    }
+
     public boolean initJava(String path) {
         if (loaded) {
             try {
