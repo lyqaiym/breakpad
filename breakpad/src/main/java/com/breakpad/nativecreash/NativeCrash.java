@@ -35,6 +35,7 @@ public class NativeCrash {
             printfThread(thread, thread == Thread.currentThread());
         }
         if (!havaSelf) {
+            Log.d(LOG_TAG, "onCrash:havaSelf=false");
             printfThread(Thread.currentThread(), true);
         }
     }
