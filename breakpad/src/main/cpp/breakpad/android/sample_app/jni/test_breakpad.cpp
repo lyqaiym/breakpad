@@ -43,13 +43,14 @@
 JavaVM *gJvm = NULL;
 jobject globalobj;
 
-void callJava(JNIEnv *env) {
+void callJava(JNIEnv *env, const char *path) {
     LOGD("callJava");
     jclass clazz = env->GetObjectClass(globalobj);
     LOGD("callJava:jclass");
-    jmethodID mid = env->GetStaticMethodID(clazz, "onCrash", "()V");
+    jstring jstring1 = env->NewStringUTF(path);
+    jmethodID mid = env->GetStaticMethodID(clazz, "onCrash", "(Ljava/lang/String;)V");
     LOGD("callJava:jmethodID");
-    env->CallStaticVoidMethod(clazz, mid);
+    env->CallStaticVoidMethod(clazz, mid, jstring1);
     LOGD("callJava:end");
 }
 
@@ -63,7 +64,7 @@ namespace {
 //        gJvm->GetEnv((void **) &env, JNI_VERSION_1_6);
         gJvm->AttachCurrentThread(&env, NULL);
         LOGD("DumpCallback:env=%p", env);
-        callJava(env);
+        callJava(env, descriptor.path());
         return succeeded;
     }
 }  // namespace

@@ -20,8 +20,8 @@ public class NativeCrash {
      * 只有java子线程可以回调
      * c创建线程调用AttachCurrentThread也行
      */
-    public static void onCrash() {
-        Log.d(LOG_TAG, "onCrash");
+    public static void onCrash(String path) {
+        Log.d(LOG_TAG, "onCrash:path=" + path);
         ThreadGroup group = Thread.currentThread().getThreadGroup();
         Log.d(LOG_TAG, "onCrash:activeCount=" + group.activeCount());
         Thread[] threads = new Thread[group.activeCount()];
