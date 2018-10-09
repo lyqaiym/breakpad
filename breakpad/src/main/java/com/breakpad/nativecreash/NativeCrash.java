@@ -54,8 +54,10 @@ public class NativeCrash {
     public boolean initJava(String path) {
         if (loaded) {
             try {
-                init(path);
-                return true;
+                int i = init(path);
+                if (i == 1) {
+                    return true;
+                }
             } catch (UnsatisfiedLinkError e) {
                 Log.e(LOG_TAG, "init", e);
             }
@@ -67,7 +69,7 @@ public class NativeCrash {
 
     public native void crashThread();
 
-    private native void init(String path);
+    private native int init(String path);
 
     static boolean loaded;
 

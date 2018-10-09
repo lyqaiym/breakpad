@@ -12,7 +12,7 @@ extern "C" {
  * Method:    startJNICTraceRoute
  * Signature: (Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_com_breakpad_nativecreash_NativeCrash_init
+JNIEXPORT jint JNICALL Java_com_breakpad_nativecreash_NativeCrash_init
   (JNIEnv *, jobject, jstring);
 JNIEXPORT void JNICALL Java_com_breakpad_nativecreash_NativeCrash_crash
         (JNIEnv *, jobject);

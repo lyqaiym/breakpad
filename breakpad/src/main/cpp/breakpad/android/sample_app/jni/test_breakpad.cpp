@@ -87,26 +87,34 @@ google_breakpad::ExceptionHandler *exceptionHandler;
 
 int init(const char *path) {
     if (exceptionHandler != NULL) {
-        return 0;
-    }
+        return 1;
+}
     google_breakpad::MinidumpDescriptor descriptor(path);
 //    google_breakpad::ExceptionHandler eh(descriptor, NULL, DumpCallback,
 //                                         NULL, true, -1);
 //    exceptionHandler=&eh;
     exceptionHandler = new google_breakpad::ExceptionHandler(descriptor, NULL, DumpCallback,
                                                              NULL, true, -1);
-    return 0;
+    bool  installed=exceptionHandler->InitSuccess();
+    LOGD("init:installed=%d",installed);
+    if(!installed){
+        delete exceptionHandler;
+        exceptionHandler=NULL;
+    }
+    return installed;
 }
 
 //int mainTracePath(int argc, char **argv);
-JNIEXPORT void JNICALL
+JNIEXPORT jint JNICALL
 Java_com_breakpad_nativecreash_NativeCrash_init(JNIEnv *env, jobject obj,
                                                 jstring path) {
     LOGD("NativeCrash_init");
     env->GetJavaVM(&gJvm);
     globalobj = env->NewGlobalRef(obj);
     const char *c_path = env->GetStringUTFChars(path, NULL);
-    init(c_path);
+    int installed=init(c_path);
+    LOGD("NativeCrash_init:installed=%d",installed);
+    return installed;
 //    callJava(env);
 }
 

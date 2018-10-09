@@ -227,6 +227,7 @@ class ExceptionHandler {
   // Report a crash signal from an SA_SIGINFO signal handler.
   bool HandleSignal(int sig, siginfo_t* info, void* uc);
 
+    bool InitSuccess();
  private:
   // Save the old signal handlers and install new ones.
   static bool InstallHandlersLocked();

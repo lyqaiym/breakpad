@@ -117,7 +117,7 @@ const int kExceptionSignals[] = {
   SIGFPE,//错误的算术运算，如除以零
   SIGILL,//非法程序映像，例如非法指令
   SIGBUS,//总线错误（内存访问错误）
-  SIGTRAP//跟踪/断点自陷
+  SIGTRAP,//跟踪/断点自陷
 };
 const int kNumHandledSignals =
     sizeof(kExceptionSignals) / sizeof(kExceptionSignals[0]);
@@ -280,11 +280,20 @@ ExceptionHandler::~ExceptionHandler() {
 bool ExceptionHandler::InstallHandlersLocked() {
   if (handlers_installed)
     return false;
-
+        {
+            char c[40];
+            sprintf(c,"InstallHandlersLocked:num=%d",kNumHandledSignals);
+            logger::write(c,1);
+        }
   // Fail if unable to store all the old handlers.
   for (int i = 0; i < kNumHandledSignals; ++i) {
-    if (sigaction(kExceptionSignals[i], NULL, &old_handlers[i]) == -1)
-      return false;
+    if (sigaction(kExceptionSignals[i], NULL, &old_handlers[i]) == -1){
+        char c[40];
+        sprintf(c,"InstallHandlersLocked:sig=%d,error=%d",kExceptionSignals[i],errno);
+        logger::write(c,1);
+//        free(c);
+        return false;
+    }
   }
 
   struct sigaction sa;
@@ -486,6 +495,9 @@ bool ExceptionHandler::HandleSignal(int /*sig*/, siginfo_t* info, void* uc) {
   return GenerateDump(&g_crash_context_);
 }
 
+    bool ExceptionHandler::InitSuccess(){
+        return handlers_installed;
+    }
 // This is a public interface to HandleSignal that allows the client to
 // generate a crash dump. This function may run in a compromised context.
 bool ExceptionHandler::SimulateSignalDelivery(int sig) {
