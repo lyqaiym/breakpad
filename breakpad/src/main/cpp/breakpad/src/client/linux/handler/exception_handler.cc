@@ -112,7 +112,12 @@ namespace {
 // all these signals must be Core (see man 7 signal) because we rethrow the
 // signal after handling it and expect that it'll be fatal.
 const int kExceptionSignals[] = {
-  SIGSEGV, SIGABRT, SIGFPE, SIGILL, SIGBUS, SIGTRAP
+  SIGSEGV,//非法内存访问（段错误）
+  SIGABRT,//异常终止条件，例如 abort() 所起始的
+  SIGFPE,//错误的算术运算，如除以零
+  SIGILL,//非法程序映像，例如非法指令
+  SIGBUS,//总线错误（内存访问错误）
+  SIGTRAP//跟踪/断点自陷
 };
 const int kNumHandledSignals =
     sizeof(kExceptionSignals) / sizeof(kExceptionSignals[0]);
