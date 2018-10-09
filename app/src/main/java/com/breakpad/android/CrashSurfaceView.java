@@ -23,7 +23,7 @@ public class CrashSurfaceView extends SurfaceView implements SurfaceHolder.Callb
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         Log.d(TAG, "surfaceCreated");
-        bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_livevideo_learnfeedback_duration);
+        bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
         if (drawThread != null) {
             drawThread.isRun = false;
         }
@@ -32,6 +32,7 @@ public class CrashSurfaceView extends SurfaceView implements SurfaceHolder.Callb
         }
         drawThread = new DrawThread();
         drawThread.isRun = true;
+        new Thread(drawThread).start();
         new Thread(drawThread).start();
         createThread = new CreateThread();
         createThread.isRun = true;
@@ -76,7 +77,7 @@ public class CrashSurfaceView extends SurfaceView implements SurfaceHolder.Callb
                     }
                 }
                 try {
-                    Thread.sleep(30);
+                    Thread.sleep(10);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -90,13 +91,19 @@ public class CrashSurfaceView extends SurfaceView implements SurfaceHolder.Callb
         @Override
         public void run() {
             while (isRun) {
+                new Thread() {
+                    @Override
+                    public void run() {
+                        bitmap.recycle();
+                    }
+                }.start();
                 bitmap.recycle();
-                bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_livevideo_learnfeedback_duration);
-                try {
-                    Thread.sleep(30);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+//                try {
+//                    Thread.sleep(10);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
             }
         }
     }
