@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.breakpad.nativecreash.NativeCrash;
@@ -94,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
                 ldNetTraceRoute.startJNICTraceRoute("");
             }
         });
-        ImageView bt_test_bitmap = (ImageView) findViewById(R.id.bt_test_bitmap);
+        Button bt_test_bitmap = (Button) findViewById(R.id.bt_test_bitmap);
         bt_test_bitmap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {

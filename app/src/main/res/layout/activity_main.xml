@@ -48,12 +48,11 @@
         android:layout_below="@id/bt_self_other"
         android:text="其他的so" />
 
-    <ImageView
+    <Button
         android:id="@+id/bt_test_bitmap"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/bt_test_other"
-        android:background="@drawable/ic_livevideo_learnfeedback_duration"
         android:text="测试bitmap" />
 
     <com.breakpad.android.CrashSurfaceView
