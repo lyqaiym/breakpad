@@ -2,18 +2,11 @@ package com.breakpad.nativecreash;
 
 import android.util.Log;
 
-public class NativeCrash {
-    private static final String LOG_TAG = "NativeCrash";
-    private static NativeCrash instance;
+public class NativeOnCrash {
+    private static final String LOG_TAG = "NativeOnCrash";
 
-    private NativeCrash() {
-    }
-
-    public static NativeCrash getInstance() {
-        if (instance == null) {
-            instance = new NativeCrash();
-        }
-        return instance;
+    static {
+        Log.d(LOG_TAG, "NativeOnCrash:static");
     }
 
     /**
@@ -51,34 +44,4 @@ public class NativeCrash {
         Log.d(LOG_TAG, "printfThread:<<<<<<<<<<<<");
     }
 
-    public boolean initJava(String path) {
-        if (loaded) {
-            try {
-                int i = init(path);
-                if (i == 1) {
-                    return true;
-                }
-            } catch (UnsatisfiedLinkError e) {
-                Log.e(LOG_TAG, "init", e);
-            }
-        }
-        return false;
-    }
-
-    public native void crash();
-
-    public native void crashThread();
-
-    private native int init(String path);
-
-    static boolean loaded;
-
-    static {
-        try {
-            System.loadLibrary("test_google_breakpad");
-            loaded = true;
-        } catch (Exception e) {
-            Log.e(LOG_TAG, "loadLibrary", e);
-        }
-    }
 }

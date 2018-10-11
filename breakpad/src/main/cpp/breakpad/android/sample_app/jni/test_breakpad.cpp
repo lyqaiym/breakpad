@@ -45,13 +45,18 @@ jobject globalobj;
 
 void callJava(JNIEnv *env, const char *path) {
     LOGD("callJava");
-    jclass clazz = env->GetObjectClass(globalobj);
+//    jclass clazz = env->GetObjectClass(globalobj);
+    jclass clazz = env->FindClass("com/breakpad/nativecreash/NativeOnCrash");
     LOGD("callJava:jclass");
     jstring jstring1 = env->NewStringUTF(path);
     jmethodID mid = env->GetStaticMethodID(clazz, "onCrash", "(Ljava/lang/String;)V");
     LOGD("callJava:jmethodID");
-    env->CallStaticVoidMethod(clazz, mid, jstring1);
-    LOGD("callJava:end");
+    if(mid!= nullptr){
+        env->CallStaticVoidMethod(clazz, mid, jstring1);
+        LOGD("callJava:mid:end");
+    } else{//有的系统。class加载不出来mid=null
+        LOGD("callJava:end");
+    }
 }
 
 namespace {
