@@ -280,15 +280,12 @@ ExceptionHandler::~ExceptionHandler() {
 bool ExceptionHandler::InstallHandlersLocked() {
   if (handlers_installed)
     return false;
-        {
-            char c[40];
-            sprintf(c,"InstallHandlersLocked:num=%d",kNumHandledSignals);
-            logger::write(c,1);
-        }
+      char c[40];
+      sprintf(c,"InstallHandlersLocked:num=%d",kNumHandledSignals);
+      logger::write(c,1);
   // Fail if unable to store all the old handlers.
   for (int i = 0; i < kNumHandledSignals; ++i) {
     if (sigaction(kExceptionSignals[i], NULL, &old_handlers[i]) == -1){
-        char c[40];
         sprintf(c,"InstallHandlersLocked:sig=%d,error=%d",kExceptionSignals[i],errno);
         logger::write(c,1);
 //        free(c);
@@ -340,7 +337,9 @@ void ExceptionHandler::RestoreHandlersLocked() {
 // Runs on the crashing thread.
 // static
 void ExceptionHandler::SignalHandler(int sig, siginfo_t* info, void* uc) {
-
+      char c[40];
+      sprintf(c,"SignalHandler:sig=%d,si_errno=%d,uc=%p",sig,info->si_errno,uc);
+      logger::write(c,1);
   // Give the first chance handler a chance to recover from this signal
   //
   // This is primarily used by V8. V8 uses guard regions to guarantee memory
