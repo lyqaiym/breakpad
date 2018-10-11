@@ -45,8 +45,8 @@ jobject globalobj;
 
 void callJava(JNIEnv *env, const char *path) {
     LOGD("callJava");
-//    jclass clazz = env->GetObjectClass(globalobj);
-    jclass clazz = env->FindClass("com/breakpad/nativecreash/NativeOnCrash");
+    jclass clazz = env->GetObjectClass(globalobj);
+//    jclass clazz = env->FindClass("com/breakpad/nativecreash/NativeOnCrash");
     LOGD("callJava:jclass");
     jstring jstring1 = env->NewStringUTF(path);
     jmethodID mid = env->GetStaticMethodID(clazz, "onCrash", "(Ljava/lang/String;)V");
