@@ -430,7 +430,7 @@ namespace google_breakpad {
                     sprintf(c, "SignalHandler:sa_sigaction=%p", sigaction1->sa_sigaction);
                     logger::write(c, 1);
                     if (sigaction1->sa_sigaction != nullptr) {
-                        sigaction1->sa_sigaction(kExceptionSignals[i], NULL, NULL);
+                        sigaction1->sa_sigaction(kExceptionSignals[i], info, uc);
                     }
                 } else {
                     sprintf(c, "SignalHandler:sa_sigaction=null");
