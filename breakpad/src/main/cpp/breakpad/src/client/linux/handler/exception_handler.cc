@@ -282,7 +282,7 @@ namespace google_breakpad {
     bool ExceptionHandler::InstallHandlersLocked() {
         if (handlers_installed)
             return false;
-        char c[40];
+        char c[100];
         sprintf(c, "InstallHandlersLocked:num=%d", kNumHandledSignals);
         logger::write(c, 1);
         // Fail if unable to store all the old handlers.
@@ -339,7 +339,7 @@ namespace google_breakpad {
 // Runs on the crashing thread.
 // static
     void ExceptionHandler::SignalHandler(int sig, siginfo_t *info, void *uc) {
-        char c[40];
+        char c[100];
         sprintf(c, "SignalHandler:sig=%d,si_errno=%d,uc=%p", sig, info->si_errno, uc);
         logger::write(c, 1);
         // Give the first chance handler a chance to recover from this signal
@@ -421,6 +421,24 @@ namespace google_breakpad {
             // No need to reissue the signal. It will automatically trigger again,
             // when we return from the signal handler.
         }
+        for (int i = 0; i < kNumHandledSignals; ++i) {
+            sprintf(c, "SignalHandler:sig=%d", kExceptionSignals[i]);
+            logger::write(c, 1);
+            if (kExceptionSignals[i] == sig) {
+                struct sigaction *sigaction1 = &old_handlers[i];
+                if (sigaction1 != nullptr) {
+                    sprintf(c, "SignalHandler:sa_sigaction=%p", sigaction1->sa_sigaction);
+                    logger::write(c, 1);
+                    if (sigaction1->sa_sigaction != nullptr) {
+                        sigaction1->sa_sigaction(kExceptionSignals[i], NULL, NULL);
+                    }
+                } else {
+                    sprintf(c, "SignalHandler:sa_sigaction=null");
+                    logger::write(c, 1);
+                }
+                break;
+            }
+        }
     }
 
     struct ThreadArgument {
@@ -470,21 +488,21 @@ namespace google_breakpad {
         memcpy(&g_crash_context_.context, uc, sizeof(ucontext_t));
 #if defined(__aarch64__)
         ucontext_t* uc_ptr = (ucontext_t*)uc;
-        struct fpsimd_context* fp_ptr =
-            (struct fpsimd_context*)&uc_ptr->uc_mcontext.__reserved;
-        if (fp_ptr->head.magic == FPSIMD_MAGIC) {
-          memcpy(&g_crash_context_.float_state, fp_ptr,
-                 sizeof(g_crash_context_.float_state));
-        }
+  struct fpsimd_context* fp_ptr =
+      (struct fpsimd_context*)&uc_ptr->uc_mcontext.__reserved;
+  if (fp_ptr->head.magic == FPSIMD_MAGIC) {
+    memcpy(&g_crash_context_.float_state, fp_ptr,
+           sizeof(g_crash_context_.float_state));
+  }
 #elif !defined(__ARM_EABI__) && !defined(__mips__)
         // FP state is not part of user ABI on ARM Linux.
-        // In case of MIPS Linux FP state is already part of ucontext_t
-        // and 'float_state' is not a member of CrashContext.
-        ucontext_t* uc_ptr = (ucontext_t*)uc;
-        if (uc_ptr->uc_mcontext.fpregs) {
-          memcpy(&g_crash_context_.float_state, uc_ptr->uc_mcontext.fpregs,
-                 sizeof(g_crash_context_.float_state));
-        }
+  // In case of MIPS Linux FP state is already part of ucontext_t
+  // and 'float_state' is not a member of CrashContext.
+  ucontext_t* uc_ptr = (ucontext_t*)uc;
+  if (uc_ptr->uc_mcontext.fpregs) {
+    memcpy(&g_crash_context_.float_state, uc_ptr->uc_mcontext.fpregs,
+           sizeof(g_crash_context_.float_state));
+  }
 #endif
         g_crash_context_.tid = syscall(__NR_gettid);
         if (crash_handler_ != NULL) {
@@ -701,30 +719,30 @@ namespace google_breakpad {
 
 #if defined(__i386__)
         // In CPUFillFromUContext in minidumpwriter.cc the stack pointer is retrieved
-        // from REG_UESP instead of from REG_ESP. REG_UESP is the user stack pointer
-        // and it only makes sense when running in kernel mode with a different stack
-        // pointer. When WriteMiniDump is called during normal processing REG_UESP is
-        // zero which leads to bad minidump files.
-        if (!context.context.uc_mcontext.gregs[REG_UESP]) {
-          // If REG_UESP is set to REG_ESP then that includes the stack space for the
-          // CrashContext object in this function, which is about 128 KB. Since the
-          // Linux dumper only records 32 KB of stack this would mean that nothing
-          // useful would be recorded. A better option is to set REG_UESP to REG_EBP,
-          // perhaps with a small negative offset in case there is any code that
-          // objects to them being equal.
-          context.context.uc_mcontext.gregs[REG_UESP] =
-            context.context.uc_mcontext.gregs[REG_EBP] - 16;
-          // The stack saving is based off of REG_ESP so it must be set to match the
-          // new REG_UESP.
-          context.context.uc_mcontext.gregs[REG_ESP] =
-            context.context.uc_mcontext.gregs[REG_UESP];
-        }
+  // from REG_UESP instead of from REG_ESP. REG_UESP is the user stack pointer
+  // and it only makes sense when running in kernel mode with a different stack
+  // pointer. When WriteMiniDump is called during normal processing REG_UESP is
+  // zero which leads to bad minidump files.
+  if (!context.context.uc_mcontext.gregs[REG_UESP]) {
+    // If REG_UESP is set to REG_ESP then that includes the stack space for the
+    // CrashContext object in this function, which is about 128 KB. Since the
+    // Linux dumper only records 32 KB of stack this would mean that nothing
+    // useful would be recorded. A better option is to set REG_UESP to REG_EBP,
+    // perhaps with a small negative offset in case there is any code that
+    // objects to them being equal.
+    context.context.uc_mcontext.gregs[REG_UESP] =
+      context.context.uc_mcontext.gregs[REG_EBP] - 16;
+    // The stack saving is based off of REG_ESP so it must be set to match the
+    // new REG_UESP.
+    context.context.uc_mcontext.gregs[REG_ESP] =
+      context.context.uc_mcontext.gregs[REG_UESP];
+  }
 #endif
 
 #if !defined(__ARM_EABI__) && !defined(__aarch64__) && !defined(__mips__)
         // FPU state is not part of ARM EABI ucontext_t.
-        memcpy(&context.float_state, context.context.uc_mcontext.fpregs,
-               sizeof(context.float_state));
+  memcpy(&context.float_state, context.context.uc_mcontext.fpregs,
+         sizeof(context.float_state));
 #endif
         context.tid = sys_gettid();
 
@@ -733,19 +751,19 @@ namespace google_breakpad {
         context.siginfo.si_signo = MD_EXCEPTION_CODE_LIN_DUMP_REQUESTED;
 #if defined(__i386__)
         context.siginfo.si_addr =
-            reinterpret_cast<void*>(context.context.uc_mcontext.gregs[REG_EIP]);
+      reinterpret_cast<void*>(context.context.uc_mcontext.gregs[REG_EIP]);
 #elif defined(__x86_64__)
         context.siginfo.si_addr =
-            reinterpret_cast<void*>(context.context.uc_mcontext.gregs[REG_RIP]);
+      reinterpret_cast<void*>(context.context.uc_mcontext.gregs[REG_RIP]);
 #elif defined(__arm__)
         context.siginfo.si_addr =
                 reinterpret_cast<void *>(context.context.uc_mcontext.arm_pc);
 #elif defined(__aarch64__)
         context.siginfo.si_addr =
-            reinterpret_cast<void*>(context.context.uc_mcontext.pc);
+      reinterpret_cast<void*>(context.context.uc_mcontext.pc);
 #elif defined(__mips__)
-        context.siginfo.si_addr =
-            reinterpret_cast<void*>(context.context.uc_mcontext.pc);
+  context.siginfo.si_addr =
+      reinterpret_cast<void*>(context.context.uc_mcontext.pc);
 #else
 #error "This code has not been ported to your platform yet."
 #endif

@@ -92,7 +92,9 @@ google_breakpad::ExceptionHandler *exceptionHandler;
 
 int init(const char *path) {
     if (exceptionHandler != NULL) {
-        return 1;
+        delete exceptionHandler;
+        exceptionHandler=NULL;
+//        return 1;
 }
     google_breakpad::MinidumpDescriptor descriptor(path);
 //    google_breakpad::ExceptionHandler eh(descriptor, NULL, DumpCallback,
